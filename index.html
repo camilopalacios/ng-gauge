@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html ng-app="GaugeDemoApp">
+	<head>
+		<script type="text/javascript" src="./dist/vendors.js"> </script>
+		<script type="text/javascript" src="./dist/all.js"> </script>
+		<link rel="stylesheet" href="style.css" />
+		<meta charset="UTF-8"></meta>
+	</head>
+	<body ng-controller="GaugeController as gaugeCtrl">
+		<div id="gaugeDiv">
+			<ui-gauge value="gaugeCtrl.value" intervals="gaugeCtrl.intervals" options="gaugeCtrl.options"></ui-gauge>
+		</div>
+
+		<button id="clickMe" ng-click="gaugeCtrl.mockFunction()">Click me </button>
+	</body>
+</html>
