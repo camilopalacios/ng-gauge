@@ -1,76 +1,3 @@
-;(function() {
-"use strict";
-
-angular
-	.module('GaugeDemoApp', ['ui.gauge'])
-	.controller('GaugeController',GaugeController);
-
-function GaugeController() {
-
-	var controller ={
-		mockFunction: mockFunction,
-		getParentSize: getParentSize,
-		value: 50,
-		intervals : {
-			values: [0,10,20,30,40,10,10,10,10,10,10,50,60,70,80,90,100],
-		},
-		options : {
-			size: getParentSize(),
-			lineColor: 'grey',
-			lineWidth: 5,
-			//intervalColors: ['red','yellow','green', 'blue', 'purple', 'grey'],
-			min: 0,
-			max: 100,
-			startAngle:-90,
-			endAngle:90,
-			animate: {
-				enabled: true,
-				duration: 1000,
-				ease: 'bounce'
-			},
-			displayInput: true,
-			unit: "%",
-			subText: {
-				enabled: true,
-				color: '#222',
-				text: 'HDD space'
-			},
-			skin: {
-				type: 'simple',
-				width: 10,
-				color: 'rgba(255,0,0,.5)',
-				spaceWidth: 5
-			},
-			textColor: '#212121',
-			bgColor: "#f5f5f0",
-			step : 1,
-		},
-	};
-
-	return controller;
-
-	function getParentSize(){
-		var element = document.getElementById('gaugeDiv'),
-		style = window.getComputedStyle(element);
-		var width = parseInt(style.getPropertyValue('width'), 10),
-		height = parseInt(style.getPropertyValue('height'),10);
-		return Math.min(width, height);
-	};
-
-	function mockFunction(){
-		controller.intervals.values = [];
-		controller.intervals.values.push(controller.options.min);
-		for(var i=1; i < 9; i++){
-			controller.intervals.values.push(Math.floor(Math.random()*10) * 10);
-		}
-		controller.intervals.values.push(controller.options.max);
-	};
-}
-}());
-
-;(function() {
-"use strict";
-
 'use strict';
 
 (function(){
@@ -303,8 +230,8 @@ function GaugeController() {
         if(this.options.displayInput){
           if(this.intervals.values.hasOwnProperty(i)){
             var v = this.intervals.values[i];
-            if (typeof this.options.inputFormatter === "function"){
-                v = this.options.inputFormatter(v);
+            if (typeof this.options.intervalFormatter === "function"){
+                v = this.options.intervalFormatter(v);
             }
             if(i < this.intervalArcs.length){
               // get the start angle of the arc
@@ -322,7 +249,7 @@ function GaugeController() {
             .attr('font-size', fontSize)
             .attr('transform', 'translate(' + (this.options.size/2 - Math.cos(angle) * this.options.size/2.5) + ', ' + (this.options.size/2 - Math.sin(angle) * this.options.size/2.5) + ')')
             .style("fill", this.options.textColor)
-            .text(this.intervals.values[i]);
+            .text(v);
           }
         }
       }
@@ -335,8 +262,8 @@ function GaugeController() {
         this.value = this.value.toFixed(1);
       }
       var v = this.value;
-      if (typeof this.options.inputFormatter === "function"){
-          v = this.options.inputFormatter(v);
+      if (typeof this.options.mainFormatter === "function"){
+          v = this.options.mainFormatter(v);
       }
       svg.append('text')
       .attr('id', 'text')
@@ -345,6 +272,11 @@ function GaugeController() {
       .style("fill", this.options.textColor)
       .text(v + this.options.unit || "")
       .attr('transform', 'translate(' + ((this.options.size / 2)) + ', ' + ((this.options.size / 2) + (this.options.size*0.18)) + ')');
+
+      v = this.options.subText.text;
+      if (typeof this.options.subTextFormatter === "function"){
+          v = this.options.subTextFormatter(v);
+      }
 
       if(this.options.subText.enabled) {
         fontSize = (this.options.size*0.07) + "px";
@@ -356,7 +288,7 @@ function GaugeController() {
         .attr("text-anchor", "middle")
         .attr("font-size", fontSize)
         .style("fill", this.options.subText.color)
-        .text(this.options.subText.text)
+        .text(v)
         .attr('transform', 'translate(' + ((this.options.size / 2)) + ', ' + ((this.options.size / 2) + (this.options.size*0.24)) + ')');
       }
 
@@ -549,8 +481,8 @@ function GaugeController() {
         }
         if(that.options.displayInput) {
           var v = that.value;
-          if (typeof that.options.inputFormatter === "function"){
-            v = that.options.inputFormatter(v);
+          if (typeof that.options.mainFormatter === "function"){
+            v = that.options.mainFormatter(v);
           }
           d3.select(that.element).select('#text').text(v + that.options.unit || "");
         }
@@ -577,8 +509,8 @@ function GaugeController() {
 
       if(this.options.displayInput) {
         var v = this.value;
-        if (typeof this.options.inputFormatter === "function"){
-          v = this.options.inputFormatter(v);
+        if (typeof this.options.mainFormatter === "function"){
+          v = this.options.mainFormatter(v);
         }
         d3.select(this.element).select('#text').text(v + this.options.unit || "");
       }
@@ -626,7 +558,9 @@ function GaugeController() {
           endAngle: 90,
           unit: "",
           displayInput: true,
-          inputFormatter: function(v){ return v; },
+          mainFormatter: function(v){return "main " + v;},
+          subTextFormatter: function(v){return "sub " + v;},
+          intervalFormatter: function(v){return "intr" + v;},
           readOnly: false,
           trackWidth: 0,
           barWidth: 0,
@@ -710,4 +644,3 @@ function GaugeController() {
 
   angular.module('ui.gauge', []).directive('uiGauge', ui.gaugeDirective);
 })();
-}());

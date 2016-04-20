@@ -1,7 +1,10 @@
 {
   "name": "ng-gauge",
   "description": "Used to display data in a gauge. It's based on the RadMie's ng-knob library.",
-  "main": "index.html",
+  "main": [
+    "./src/controller.js",
+    "./src/ng-gauge.js"
+  ],
   "authors": [
     "Camilo Palacios"
   ],
@@ -22,6 +25,10 @@
     "test",
     "tests"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/camilopalacios/ng-gauge.git"
+  },
   "dependencies": {
     "angular": "^1.5.5"
   }

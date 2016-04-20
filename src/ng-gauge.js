@@ -230,8 +230,8 @@
         if(this.options.displayInput){
           if(this.intervals.values.hasOwnProperty(i)){
             var v = this.intervals.values[i];
-            if (typeof this.options.inputFormatter === "function"){
-                v = this.options.inputFormatter(v);
+            if (typeof this.options.intervalFormatter === "function"){
+                v = this.options.intervalFormatter(v);
             }
             if(i < this.intervalArcs.length){
               // get the start angle of the arc
@@ -249,7 +249,7 @@
             .attr('font-size', fontSize)
             .attr('transform', 'translate(' + (this.options.size/2 - Math.cos(angle) * this.options.size/2.5) + ', ' + (this.options.size/2 - Math.sin(angle) * this.options.size/2.5) + ')')
             .style("fill", this.options.textColor)
-            .text(this.intervals.values[i]);
+            .text(v);
           }
         }
       }
@@ -262,8 +262,8 @@
         this.value = this.value.toFixed(1);
       }
       var v = this.value;
-      if (typeof this.options.inputFormatter === "function"){
-          v = this.options.inputFormatter(v);
+      if (typeof this.options.mainFormatter === "function"){
+          v = this.options.mainFormatter(v);
       }
       svg.append('text')
       .attr('id', 'text')
@@ -272,6 +272,11 @@
       .style("fill", this.options.textColor)
       .text(v + this.options.unit || "")
       .attr('transform', 'translate(' + ((this.options.size / 2)) + ', ' + ((this.options.size / 2) + (this.options.size*0.18)) + ')');
+
+      v = this.options.subText.text;
+      if (typeof this.options.subTextFormatter === "function"){
+          v = this.options.subTextFormatter(v);
+      }
 
       if(this.options.subText.enabled) {
         fontSize = (this.options.size*0.07) + "px";
@@ -283,7 +288,7 @@
         .attr("text-anchor", "middle")
         .attr("font-size", fontSize)
         .style("fill", this.options.subText.color)
-        .text(this.options.subText.text)
+        .text(v)
         .attr('transform', 'translate(' + ((this.options.size / 2)) + ', ' + ((this.options.size / 2) + (this.options.size*0.24)) + ')');
       }
 
@@ -476,8 +481,8 @@
         }
         if(that.options.displayInput) {
           var v = that.value;
-          if (typeof that.options.inputFormatter === "function"){
-            v = that.options.inputFormatter(v);
+          if (typeof that.options.mainFormatter === "function"){
+            v = that.options.mainFormatter(v);
           }
           d3.select(that.element).select('#text').text(v + that.options.unit || "");
         }
@@ -504,8 +509,8 @@
 
       if(this.options.displayInput) {
         var v = this.value;
-        if (typeof this.options.inputFormatter === "function"){
-          v = this.options.inputFormatter(v);
+        if (typeof this.options.mainFormatter === "function"){
+          v = this.options.mainFormatter(v);
         }
         d3.select(this.element).select('#text').text(v + this.options.unit || "");
       }
@@ -553,7 +558,9 @@
           endAngle: 90,
           unit: "",
           displayInput: true,
-          inputFormatter: function(v){ return v; },
+          mainFormatter: function(v){return "main " + v;},
+          subTextFormatter: function(v){return "sub " + v;},
+          intervalFormatter: function(v){return "intr" + v;},
           readOnly: false,
           trackWidth: 0,
           barWidth: 0,

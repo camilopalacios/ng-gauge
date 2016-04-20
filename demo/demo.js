@@ -1,3 +1,6 @@
+;(function() {
+"use strict";
+
 angular
 	.module('GaugeDemoApp', ['ui.gauge'])
 	.controller('GaugeController',GaugeController);
@@ -64,3 +67,4 @@ function GaugeController() {
 		console.log();
 	};
 }
+}());
