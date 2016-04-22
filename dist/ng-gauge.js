@@ -25,6 +25,8 @@
     this.intervals.values = uniq(this.intervals.values);
     this.colors = [];
     this.options = options;
+    this.size;
+    this.svg;
     this.inDrag = false;
   };
   /**
@@ -79,9 +81,9 @@
   Gauge.prototype.drawAxis = function(svg, label){
     var elem = svg.append('circle')
     .attr("id", label)
-    .attr("cx", this.options.size/2)
-    .attr("cy", this.options.size/2)
-    .attr("r",  this.options.size*0.015)
+    .attr("cx", this.size/2)
+    .attr("cy", this.size/2)
+    .attr("r",  this.size*0.015)
     .attr("fill", this.options.lineColor)
     return elem;
   };
@@ -94,7 +96,7 @@
     .attr('id', label)
     .attr('d', arc)
     .style(style)
-    .attr('transform', 'translate(' + (this.options.size / 2) + ', ' + (this.options.size / 2) + ')');
+    .attr('transform', 'translate(' + (this.size / 2) + ', ' + (this.size / 2) + ')');
 
     if(this.options.readOnly === false) {
       if (click) {
@@ -112,7 +114,18 @@
    *   Create the arcs
    */
   Gauge.prototype.createArcs = function() {
-    var outerRadius = parseInt((this.options.size / 2), 10),
+    this.svg = d3.select(this.element)
+    .append('svg')
+    .attr({
+      "width": '100%',
+      "height": '100%'
+    });
+
+    this.size = Math.min(parseInt(this.svg.style("width"),10), parseInt(this.svg.style("height"),10));
+    console.log(this.size);
+    this.svg.attr('viewBox', '0 0 '+this.size+' '+this.size);
+
+    var outerRadius = parseInt((this.size / 2), 10),
     startAngle = this.valueToRadians(this.options.startAngle, 360),
     endAngle = this.valueToRadians(this.options.endAngle, 360);
     if(this.options.scale.enabled) {
@@ -205,21 +218,25 @@
    *   Draw the arcs
    */
   Gauge.prototype.drawArcs = function(clickInteraction, dragBehavior) {
-    var svg = d3.select(this.element)
+    /*var svg = d3.select(this.element)
     .append('svg')
-    .attr("width", this.options.size)
-    .attr("height", this.options.size);
-
+    .attr({
+      "width": '100%',
+      "height": '100%'
+    });
+    //.attr('viewBox', '0 0 '+this.size+' '+this.size);
+    this.size = parseInt(svg.style("width"),10);
+    */
     // Draws the background arc
     if(this.options.bgColor) {
-      this.drawArc(svg, this.bgArc, 'bgArc', { "fill": this.options.bgColor });
+      this.drawArc(this.svg, this.bgArc, 'bgArc', { "fill": this.options.bgColor });
     }
 
     // Draws the intervals arcs
     if(this.intervalArcs.length != 0){
       for(var i in this.intervalArcs){
         if(this.intervalArcs.hasOwnProperty(i)){
-          this.drawArc(svg, this.intervalArcs[i], 'intervalArc' + i, { "fill": this.colors[i] });
+          this.drawArc(this.svg, this.intervalArcs[i], 'intervalArc' + i, { "fill": this.colors[i] });
         }
       }
     }
@@ -242,19 +259,19 @@
               var f = this.intervalArcs[i-1].endAngle();
             }
             var angle = (f() + Math.PI / 2);
-            var fontSize = (this.options.size*0.05) + "px";
-            svg.append('text')
+            var fontSize = (this.size*0.05) + "px";
+            this.svg.append('text')
             .attr('id', 'intervalText'+i)
             .attr('text-anchor', 'middle')
             .attr('font-size', fontSize)
-            .attr('transform', 'translate(' + (this.options.size/2 - Math.cos(angle) * this.options.size/2.5) + ', ' + (this.options.size/2 - Math.sin(angle) * this.options.size/2.5) + ')')
+            .attr('transform', 'translate(' + (this.size/2 - Math.cos(angle) * this.size/2.5) + ', ' + (this.size/2 - Math.sin(angle) * this.size/2.5) + ')')
             .style("fill", this.options.textColor)
             .text(v);
           }
         }
       }
 
-      var fontSize = (this.options.size*0.20) + "px";
+      var fontSize = (this.size*0.20) + "px";
       if(this.options.fontSize !== 'auto') {
         fontSize = this.options.fontSize + "px";
       }
@@ -265,13 +282,13 @@
       if (typeof this.options.mainFormatter === "function"){
           v = this.options.mainFormatter(v);
       }
-      svg.append('text')
+      this.svg.append('text')
       .attr('id', 'text')
       .attr("text-anchor", "middle")
       .attr("font-size", fontSize)
       .style("fill", this.options.textColor)
       .text(v + this.options.unit || "")
-      .attr('transform', 'translate(' + ((this.options.size / 2)) + ', ' + ((this.options.size / 2) + (this.options.size*0.18)) + ')');
+      .attr('transform', 'translate(' + ((this.size / 2)) + ', ' + ((this.size / 2) + (this.size*0.18)) + ')');
 
       v = this.options.subText.text;
       if (typeof this.options.subTextFormatter === "function"){
@@ -279,17 +296,17 @@
       }
 
       if(this.options.subText.enabled) {
-        fontSize = (this.options.size*0.07) + "px";
+        fontSize = (this.size*0.07) + "px";
         if(this.options.subText.font !== 'auto') {
           fontSize = this.options.subText.font + "px";
         }
-        svg.append('text')
+        this.svg.append('text')
         .attr('class', 'sub-text')
         .attr("text-anchor", "middle")
         .attr("font-size", fontSize)
         .style("fill", this.options.subText.color)
         .text(v)
-        .attr('transform', 'translate(' + ((this.options.size / 2)) + ', ' + ((this.options.size / 2) + (this.options.size*0.24)) + ')');
+        .attr('transform', 'translate(' + ((this.size / 2)) + ', ' + ((this.size / 2) + (this.size*0.24)) + ')');
       }
 
     }
@@ -303,7 +320,7 @@
       }
       if(this.options.scale.type === 'dots') {
         var width = this.options.scale.width;
-        radius = (this.options.size / 2) - width;
+        radius = (this.size / 2) - width;
         quantity = this.options.scale.quantity;
         var offset = radius + this.options.scale.width;
         data = d3.range(quantity).map(function () {
@@ -315,7 +332,7 @@
             r: width
           };
         });
-        svg.selectAll("circle")
+        this.svg.selectAll("circle")
         .data(data)
         .enter().append("circle")
         .attr({
@@ -332,7 +349,7 @@
         });
       } else if (this.options.scale.type === 'lines') {
         var height = this.options.scale.height;
-        radius = (this.options.size / 2);
+        radius = (this.size / 2);
         quantity = this.options.scale.quantity;
         data = d3.range(quantity).map(function () {
           angle = (count * (endRadians - startRadians)) - (Math.PI / 2) + startRadians;
@@ -344,7 +361,7 @@
             y2: radius + Math.sin(angle) * (radius - height)
           };
         });
-        svg.selectAll("line")
+        this.svg.selectAll("line")
         .data(data)
         .enter().append("line")
         .attr({
@@ -366,26 +383,26 @@
       }
     }
     if(this.options.skin.type === 'tron') {
-      this.drawArc(svg, this.hoopArc, 'hoopArc', { "fill": this.options.skin.color });
+      this.drawArc(this.svg, this.hoopArc, 'hoopArc', { "fill": this.options.skin.color });
     }
-    this.drawArc(svg, this.trackArc, 'trackArc', { "fill": this.options.trackColor });
+    this.drawArc(this.svg, this.trackArc, 'trackArc', { "fill": this.options.trackColor });
     if(this.options.displayPrevious) {
-      this.changeElem = this.drawArc(svg, this.changeArc, 'changeArc', { "fill": this.options.prevBarColor });
+      this.changeElem = this.drawArc(this.svg, this.changeArc, 'changeArc', { "fill": this.options.prevBarColor });
     } else {
-      this.changeElem = this.drawArc(svg, this.changeArc, 'changeArc', { "fill-opacity": 0 });
+      this.changeElem = this.drawArc(this.svg, this.changeArc, 'changeArc', { "fill-opacity": 0 });
     }
-    this.valueElem = this.drawArc(svg, this.valueArc, 'valueArc', { "fill": this.options.barColor });
+    this.valueElem = this.drawArc(this.svg, this.valueArc, 'valueArc', { "fill": this.options.barColor });
 
     var cursor = "pointer";
     if(this.options.readOnly) {
       cursor = "default";
     }
 
-    this.drawArc(svg, this.interactArc, 'interactArc', { "fill-opacity": 0, "cursor": cursor }, clickInteraction, dragBehavior);
+    this.drawArc(this.svg, this.interactArc, 'interactArc', { "fill-opacity": 0, "cursor": cursor }, clickInteraction, dragBehavior);
     // Draw the line
     var data = this.calculateLineData(this.valueToRadians(this.value, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min));
-    this.valueLine = this.drawLine(svg, data, 'line');
-    this.drawAxis(svg, 'axis');
+    this.valueLine = this.drawLine(this.svg, data, 'line');
+    this.drawAxis(this.svg, 'axis');
   };
 
   /*
@@ -394,8 +411,8 @@
   Gauge.prototype.calculateLineData = function(value){
     var radius, radians, angle;
     angle = value - Math.PI / 2;
-    radius = this.options.size/2;
-    var data = [{"x": this.options.size/2, "y": this.options.size/2},
+    radius = this.size/2;
+    var data = [{"x": this.size/2, "y": this.size/2},
                 {"x": radius + Math.cos(angle) * (radius - this.options.intervalWidth/2), "y": radius + Math.sin(angle) * (radius - this.options.intervalWidth/2)}];
     return data;
   };
@@ -436,16 +453,16 @@
 
     function dragInteraction() {
       that.inDrag = true;
-      var x = d3.event.x - (that.options.size / 2);
-      var y = d3.event.y - (that.options.size / 2);
+      var x = d3.event.x - (that.size / 2);
+      var y = d3.event.y - (that.size / 2);
       interaction(x,y, false);
     }
 
     function clickInteraction() {
       that.inDrag = false;
       var coords = d3.mouse(this.parentNode);
-      var x = coords[0] - (that.options.size / 2);
-      var y = coords[1] - (that.options.size / 2);
+      var x = coords[0] - (that.size / 2);
+      var y = coords[1] - (that.size / 2);
       interaction(x,y, true);
     }
 
@@ -530,8 +547,6 @@
         options: '='
       },
       link: function (scope, element) {
-        //scope.colors = scope.options.intervalColors;
-        //scope.colors = [];
         scope.value = scope.value || 0;
         var defaultIntervals = {
           values : [],
@@ -553,7 +568,6 @@
             duration: 1000,
             ease: 'bounce'
           },
-          size: 400,
           startAngle: -90,
           endAngle: 90,
           unit: "",

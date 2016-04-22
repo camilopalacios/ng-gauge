@@ -12,10 +12,10 @@ function GaugeController() {
 			values: [0,10,20,30,40,10,10,10,10,10,10,50,60,70,80,90,100],
 		},
 		options : {
-			size: getParentSize(),
+			//size: getParentSize(),
 			lineColor: 'grey',
 			lineWidth: 5,
-			intervalColors: ['red','yellow','green', 'blue', 'purple', 'grey'],
+			//intervalColors: ['red','yellow','green', 'blue', 'purple', 'grey'],
 			min: 0,
 			max: 100,
 			startAngle:-90,
@@ -26,6 +26,9 @@ function GaugeController() {
 				ease: 'bounce'
 			},
 			displayInput: true,
+			mainFormatter: function(v){return v;},
+			subTextFormatter: function(v){return v;},
+			intervalFormatter: function(v){return v;},
 			subText: {
 				enabled: true,
 				color: '#222',
