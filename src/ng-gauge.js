@@ -28,6 +28,7 @@
     this.size;
     this.svg;
     this.inDrag = false;
+    this.outerRadius;
   };
   /**
    *   Convert from value to radians
@@ -116,7 +117,6 @@
     return elem;
   };
 
-
   /**
    *   Create the arcs
    */
@@ -130,23 +130,19 @@
 
     this.size = Math.min(parseInt(this.svg.style("width"),10), parseInt(this.svg.style("height"),10));
     this.svg.attr('viewBox', '0 0 '+this.size+' '+this.size);
-    //console.log(this.size);
 
-    var outerRadius = parseInt((this.size / 2), 10),
-    startAngle = this.valueToRadians(this.options.startAngle, 360),
+    this.outerRadius = parseInt((this.size / 2), 10);
+    var startAngle = this.valueToRadians(this.options.startAngle, 360),
     endAngle = this.valueToRadians(this.options.endAngle, 360);
-    if(this.options.scale.enabled) {
-      outerRadius -= this.options.scale.height + this.options.scale.spaceWidth;
-    }
-    var trackInnerRadius = outerRadius - this.options.trackWidth,
-    changeInnerRadius = outerRadius - this.options.barWidth,
-    valueInnerRadius = outerRadius - this.options.barWidth,
+    var trackInnerRadius = this.outerRadius - this.options.trackWidth,
+    changeInnerRadius = this.outerRadius - this.options.barWidth,
+    valueInnerRadius = this.outerRadius - this.options.barWidth,
     interactInnerRadius = 1,
 
-    trackOuterRadius = outerRadius,
-    changeOuterRadius = outerRadius,
-    valueOuterRadius = outerRadius,
-    interactOuterRadius = outerRadius,
+    trackOuterRadius = this.outerRadius,
+    changeOuterRadius = this.outerRadius,
+    valueOuterRadius = this.outerRadius,
+    interactOuterRadius = this.outerRadius,
     diff;
 
     if(this.options.barWidth > this.options.trackWidth) {
@@ -188,8 +184,9 @@
       }
 
       // Creating arcs
+      var intervalWidth = this.outerRadius/18 ;
       for(var i=0; i < this.intervals.values.length-1; i++){
-        this.intervalArcs.push(this.createArc(outerRadius - (this.options.intervalWidth), outerRadius,
+        this.intervalArcs.push(this.createArc(this.outerRadius - intervalWidth, this.outerRadius,
                                         this.valueToRadians(this.intervals.values[i], this.options.max, this.options.endAngle, this.options.startAngle, this.options.min),
                                         this.valueToRadians(this.intervals.values[i+1], this.options.max, this.options.endAngle, this.options.startAngle, this.options.min)
         ));
@@ -198,10 +195,10 @@
 
     if(this.options.bgColor) {
   		if(this.options.bgFull){
-  			this.bgArc = this.createArc(0, outerRadius, 0, Math.PI*2);
+  			this.bgArc = this.createArc(0, this.outerRadius, 0, Math.PI*2);
   		}
   		else{
-  			this.bgArc = this.createArc(0, outerRadius, startAngle, endAngle);
+  			this.bgArc = this.createArc(0, this.outerRadius, startAngle, endAngle);
   		}
     }
 
@@ -210,7 +207,7 @@
       changeOuterRadius = changeOuterRadius - this.options.skin.width - this.options.skin.spaceWidth;
       valueOuterRadius = valueOuterRadius - this.options.skin.width - this.options.skin.spaceWidth;
       interactOuterRadius = interactOuterRadius - this.options.skin.width - this.options.skin.spaceWidth;
-      this.hoopArc = this.createArc(outerRadius - this.options.skin.width, outerRadius, startAngle, endAngle);
+      this.hoopArc = this.createArc(this.outerRadius - this.options.skin.width, this.outerRadius, startAngle, endAngle);
     }
 
     this.trackArc = this.createArc(trackInnerRadius, trackOuterRadius, startAngle, endAngle, this.options.trackCap);
@@ -260,7 +257,7 @@
             .attr('id', 'intervalText'+i)
             .attr('text-anchor', 'middle')
             .attr('font-size', fontSize)
-            .attr('transform', 'translate(' + (this.size/2 - Math.cos(angle) * this.size/2.5) + ', ' + (this.size/2 - Math.sin(angle) * this.size/2.5) + ')')
+            .attr('transform', 'translate(' + (this.size/2 - Math.cos(angle) * this.size/2.65) + ', ' + (this.size/2 - Math.sin(angle) * this.size/2.65) + ')')
             .style("fill", this.options.textColor)
             .text(v);
           }
@@ -304,7 +301,6 @@
         .text(v)
         .attr('transform', 'translate(' + ((this.size / 2)) + ', ' + ((this.size / 2) + (this.size*0.24)) + ')');
       }
-
     }
     if(this.options.scale.enabled) {
       var radius, quantity, count = 0, angle = 0, data,
@@ -344,17 +340,17 @@
           fill: this.options.scale.color
         });
       } else if (this.options.scale.type === 'lines') {
-        var height = this.options.scale.height;
+        var height = this.outerRadius;
         radius = (this.size / 2);
-        quantity = this.options.scale.quantity;
+        quantity = this.options.max+1;
         data = d3.range(quantity).map(function () {
           angle = (count * (endRadians - startRadians)) - (Math.PI / 2) + startRadians;
           count = count + (1 / (quantity-diff));
           return {
-            x1: radius + Math.cos(angle) * radius,
-            y1: radius + Math.sin(angle) * radius,
-            x2: radius + Math.cos(angle) * (radius - height),
-            y2: radius + Math.sin(angle) * (radius - height)
+            x1: radius + Math.cos(angle) * (radius - height*0.07),
+            y1: radius + Math.sin(angle) * (radius - height*0.07),
+            x2: radius + Math.cos(angle) * (radius - height*0.12),
+            y2: radius + Math.sin(angle) * (radius - height*0.12)
           };
         });
         this.svg.selectAll("line")
@@ -538,8 +534,7 @@
         scope.intervals = angular.merge(defaultIntervals, scope.intervals);
         var defaultOptions = {
           needleColor: 'grey',
-          needleWidth: 0,
-          intervalWidth: 20,
+          //intervalWidth: 20,
           intervalColors: [],
           skin: {
             type: 'simple',
@@ -579,7 +574,7 @@
 		      bgFull: false,
           scale: {
             enabled: false,
-            type: 'lines',
+            type: 'none',
             color: 'gray',
             width: 4,
             quantity: 20,

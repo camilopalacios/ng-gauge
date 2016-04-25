@@ -10,14 +10,12 @@ function GaugeController() {
 	var controller ={
 		mockFunction: mockFunction,
 		getParentSize: getParentSize,
-		value: 25,
+		value: 65,
 		intervals : {
 			values: [0,10,20,30,40,10,10,10,10,10,10,50,60,70,80,90,100],
 		},
 		options : {
-			//size: getParentSize(),
 			needleColor: 'grey',
-			needleWidth: 5,
 			//intervalColors: ['red','yellow','green', 'blue', 'purple', 'grey'],
 			min: 0,
 			max: 100,
@@ -46,6 +44,15 @@ function GaugeController() {
 			textColor: '#212121',
 			bgColor: "#f5f5f0",
 			step : 1,
+			scale: {
+				enabled: true,
+				type: 'lines',
+				color: 'gray',
+				width: 1,
+				quantity: 12,
+				height: 10,
+				spaceWidth: 15
+			},
 		},
 	};
 
