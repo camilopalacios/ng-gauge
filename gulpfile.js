@@ -10,12 +10,13 @@ gulp.task('default',['scripts', 'demo']);
 
 gulp.task('scripts', function() {
   return gulp.src('src/ng-gauge.js')
-	.pipe(minify({
+	/*.pipe(minify({
       ext:{
           src:'.js',
           min:'-min.js'
       },
-  }))
+  }))*/
+  .pipe(rename('ng-gauge-min.js'))
 	.pipe(gulp.dest('./dist'));
 });
 

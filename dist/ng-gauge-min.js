@@ -1,1 +1,644 @@
-"use strict";!function(){function t(t,i){return t-i}function i(i){return i.sort(t).filter(function(t,i,s){return!i||t!=s[i-1]})}var s={},e=function(t,s,e,n){this.element=t,this.value=s,this.intervals=e,this.intervals.values=i(this.intervals.values),this.colors=[],this.options=n,this.size,this.svg,this.inDrag=!1};e.prototype.valueToRadians=function(t,i,s,e,n){return i=i||100,n=n||0,s=s||360,e=e||0,Math.PI/180*((t-n)*(s-e)/(i-n)+e)},e.prototype.radiansToValue=function(t,i,s,e,n){return i=i||100,s=s||0,e=e||360,n=n||0,(180/Math.PI*t-n)*(i-s)/(e-n)+s},e.prototype.createArc=function(t,i,s,e,n){var o=d3.svg.arc().innerRadius(t).outerRadius(i).startAngle(s).endAngle(e).cornerRadius(n);return o},e.prototype.drawLine=function(t,i,s){var e=t.append("line").attr("id",s).attr({x1:i[0].x,y1:i[0].y,x2:i[1].x,y2:i[1].y}).attr("stroke-width",this.options.lineWidth).attr("stroke",this.options.lineColor).attr("stroke-linecap","round");return e},e.prototype.drawAxis=function(t,i){var s=t.append("circle").attr("id",i).attr("cx",this.size/2).attr("cy",this.size/2).attr("r",.015*this.size).attr("fill",this.options.lineColor);return s},e.prototype.drawArc=function(t,i,s,e,n,o){var a=t.append("path").attr("id",s).attr("d",i).style(e).attr("transform","translate("+this.size/2+", "+this.size/2+")");return this.options.readOnly===!1&&(n&&a.on("click",n),o&&a.call(o)),a},e.prototype.createArcs=function(){this.svg=d3.select(this.element).append("svg").attr({width:"100%",height:"100%"}),this.size=Math.min(parseInt(this.svg.style("width"),10),parseInt(this.svg.style("height"),10)),console.log(this.size),this.svg.attr("viewBox","0 0 "+this.size+" "+this.size);var t=parseInt(this.size/2,10),i=this.valueToRadians(this.options.startAngle,360),s=this.valueToRadians(this.options.endAngle,360);this.options.scale.enabled&&(t-=this.options.scale.height+this.options.scale.spaceWidth);var e,n=t-this.options.trackWidth,o=t-this.options.barWidth,a=t-this.options.barWidth,r=1,h=t,l=t,p=t,c=t;if(this.options.barWidth>this.options.trackWidth?(e=(this.options.barWidth-this.options.trackWidth)/2,n-=e,h-=e):this.options.barWidth<this.options.trackWidth&&(e=(this.options.trackWidth-this.options.barWidth)/2,l-=e,p-=e,o-=e,a-=e),this.intervalArcs=[],0!=this.intervals.values.length){if(0==this.options.intervalColors.length){var u,v,d=0,g=120;this.colors=[];for(var A=0;A<this.intervals.values.length-1;A++)u=(this.intervals.values[A]+this.intervals.values[A+1])/2,v=(u-this.options.min)*(g-d)/(this.options.max-this.options.min)+d,this.colors.push("hsl("+v+",60%,50%)")}else if(this.options.intervalColors.length<this.intervals.values.length-1){for(var f=[],A=0;A<this.intervals.values.length-this.options.intervalColors.length-1;A++)f.push(this.options.intervalColors[A%this.options.intervalColors.length]);this.colors=this.options.intervalColors.concat(f)}else this.colors=this.options.intervalColors.slice();for(var A=0;A<this.intervals.values.length-1;A++)this.intervalArcs.push(this.createArc(t-this.options.intervalWidth,t,this.valueToRadians(this.intervals.values[A],this.options.max,this.options.endAngle,this.options.startAngle,this.options.min),this.valueToRadians(this.intervals.values[A+1],this.options.max,this.options.endAngle,this.options.startAngle,this.options.min)))}this.options.bgColor&&(this.options.bgFull?this.bgArc=this.createArc(0,t,0,2*Math.PI):this.bgArc=this.createArc(0,t,i,s)),"tron"===this.options.skin.type&&(h=h-this.options.skin.width-this.options.skin.spaceWidth,l=l-this.options.skin.width-this.options.skin.spaceWidth,p=p-this.options.skin.width-this.options.skin.spaceWidth,c=c-this.options.skin.width-this.options.skin.spaceWidth,this.hoopArc=this.createArc(t-this.options.skin.width,t,i,s)),this.trackArc=this.createArc(n,h,i,s,this.options.trackCap),this.changeArc=this.createArc(o,l,i,i,this.options.barCap),this.valueArc=this.createArc(a,p,i,i,this.options.barCap),this.interactArc=this.createArc(r,c,i,s)},e.prototype.drawArcs=function(t,i){if(this.options.bgColor&&this.drawArc(this.svg,this.bgArc,"bgArc",{fill:this.options.bgColor}),0!=this.intervalArcs.length)for(var s in this.intervalArcs)this.intervalArcs.hasOwnProperty(s)&&this.drawArc(this.svg,this.intervalArcs[s],"intervalArc"+s,{fill:this.colors[s]});if(this.options.displayInput){for(var s=0;s<this.intervals.values.length;s++)if(this.options.displayInput&&this.intervals.values.hasOwnProperty(s)){var e=this.intervals.values[s];if("function"==typeof this.options.intervalFormatter&&(e=this.options.intervalFormatter(e)),s<this.intervalArcs.length)var n=this.intervalArcs[s].startAngle();else var n=this.intervalArcs[s-1].endAngle();var o=n()+Math.PI/2,a=.05*this.size+"px";this.svg.append("text").attr("id","intervalText"+s).attr("text-anchor","middle").attr("font-size",a).attr("transform","translate("+(this.size/2-Math.cos(o)*this.size/2.5)+", "+(this.size/2-Math.sin(o)*this.size/2.5)+")").style("fill",this.options.textColor).text(e)}var a=.2*this.size+"px";"auto"!==this.options.fontSize&&(a=this.options.fontSize+"px"),this.options.step<1&&(this.value=this.value.toFixed(1));var e=this.value;"function"==typeof this.options.mainFormatter&&(e=this.options.mainFormatter(e)),this.svg.append("text").attr("id","text").attr("text-anchor","middle").attr("font-size",a).style("fill",this.options.textColor).text(e+this.options.unit||"").attr("transform","translate("+this.size/2+", "+(this.size/2+.18*this.size)+")"),e=this.options.subText.text,"function"==typeof this.options.subTextFormatter&&(e=this.options.subTextFormatter(e)),this.options.subText.enabled&&(a=.07*this.size+"px","auto"!==this.options.subText.font&&(a=this.options.subText.font+"px"),this.svg.append("text").attr("class","sub-text").attr("text-anchor","middle").attr("font-size",a).style("fill",this.options.subText.color).text(e).attr("transform","translate("+this.size/2+", "+(this.size/2+.24*this.size)+")"))}if(this.options.scale.enabled){var r,h,l,p=0,o=0,c=this.valueToRadians(this.options.min,this.options.max,this.options.endAngle,this.options.startAngle,this.options.min),u=this.valueToRadians(this.options.max,this.options.max,this.options.endAngle,this.options.startAngle,this.options.min),v=0;if((0!==this.options.startAngle||360!==this.options.endAngle)&&(v=1),"dots"===this.options.scale.type){var d=this.options.scale.width;r=this.size/2-d,h=this.options.scale.quantity;var g=r+this.options.scale.width;l=d3.range(h).map(function(){return o=p*(u-c)-Math.PI/2+c,p+=1/(h-v),{cx:g+Math.cos(o)*r,cy:g+Math.sin(o)*r,r:d}}),this.svg.selectAll("circle").data(l).enter().append("circle").attr({r:function(t){return t.r},cx:function(t){return t.cx},cy:function(t){return t.cy},fill:this.options.scale.color})}else if("lines"===this.options.scale.type){var A=this.options.scale.height;r=this.size/2,h=this.options.scale.quantity,l=d3.range(h).map(function(){return o=p*(u-c)-Math.PI/2+c,p+=1/(h-v),{x1:r+Math.cos(o)*r,y1:r+Math.sin(o)*r,x2:r+Math.cos(o)*(r-A),y2:r+Math.sin(o)*(r-A)}}),this.svg.selectAll("line").data(l).enter().append("line").attr({x1:function(t){return t.x1},y1:function(t){return t.y1},x2:function(t){return t.x2},y2:function(t){return t.y2},"stroke-width":this.options.scale.width,stroke:this.options.scale.color})}}"tron"===this.options.skin.type&&this.drawArc(this.svg,this.hoopArc,"hoopArc",{fill:this.options.skin.color}),this.drawArc(this.svg,this.trackArc,"trackArc",{fill:this.options.trackColor}),this.options.displayPrevious?this.changeElem=this.drawArc(this.svg,this.changeArc,"changeArc",{fill:this.options.prevBarColor}):this.changeElem=this.drawArc(this.svg,this.changeArc,"changeArc",{"fill-opacity":0}),this.valueElem=this.drawArc(this.svg,this.valueArc,"valueArc",{fill:this.options.barColor});var f="pointer";this.options.readOnly&&(f="default"),this.drawArc(this.svg,this.interactArc,"interactArc",{"fill-opacity":0,cursor:f},t,i);var l=this.calculateLineData(this.valueToRadians(this.value,this.options.max,this.options.endAngle,this.options.startAngle,this.options.min));this.valueLine=this.drawLine(this.svg,l,"line"),this.drawAxis(this.svg,"axis")},e.prototype.calculateLineData=function(t){var i,s;s=t-Math.PI/2,i=this.size/2;var e=[{x:this.size/2,y:this.size/2},{x:i+Math.cos(s)*(i-this.options.intervalWidth/2),y:i+Math.sin(s)*(i-this.options.intervalWidth/2)}];return e},e.prototype.draw=function(t){function i(){n.inDrag=!0;var t=d3.event.x-n.size/2,i=d3.event.y-n.size/2;e(t,i,!1)}function s(){n.inDrag=!1;var t=d3.mouse(this.parentNode),i=t[0]-n.size/2,s=t[1]-n.size/2;e(i,s,!0)}function e(i,s,e){var o,a,r=Math.atan(s/i)/(Math.PI/180);if(i>=0&&0>=s||i>=0&&s>=0?a=90:(a=270,n.options.startAngle<0&&(a=-90)),o=(a+r)*(Math.PI/180),n.value=n.radiansToValue(o,n.options.max,n.options.min,n.options.endAngle,n.options.startAngle),n.value>=n.options.min&&n.value<=n.options.max){n.value=Math.round(~~((n.value<0?-.5:.5)+n.value/n.options.step)*n.options.step*100)/100,n.options.step<1&&(n.value=n.value.toFixed(1)),t(n.value),n.valueArc.endAngle(n.valueToRadians(n.value,n.options.max,n.options.endAngle,n.options.startAngle,n.options.min)),n.valueElem.attr("d",n.valueArc);var h=n.calculateLineData(n.valueToRadians(n.value,n.options.max,n.options.endAngle,n.options.startAngle,n.options.min));if(n.valueLine.attr({x1:h[0].x,y1:h[0].y,x2:h[1].x,y2:h[1].y}),e&&(n.changeArc.endAngle(n.valueToRadians(n.value,n.options.max,n.options.endAngle,n.options.startAngle,n.options.min)),n.changeElem.attr("d",n.changeArc)),n.options.displayInput){var l=n.value;"function"==typeof n.options.mainFormatter&&(l=n.options.mainFormatter(l)),d3.select(n.element).select("#text").text(l+n.options.unit||"")}}}d3.select(this.element).select("svg").remove();var n=this;n.createArcs();var o=d3.behavior.drag().on("drag",i).on("dragend",s);n.drawArcs(s,o),n.options.animate.enabled?n.valueElem.transition().ease(n.options.animate.ease).duration(n.options.animate.duration).tween("",function(){var t=d3.interpolate(n.valueToRadians(n.options.startAngle,360),n.valueToRadians(n.value,n.options.max,n.options.endAngle,n.options.startAngle,n.options.min));return function(i){var s=t(i);n.valueElem.attr("d",n.valueArc.endAngle(s)),n.changeElem.attr("d",n.changeArc.endAngle(s));var e=n.calculateLineData(s);n.valueLine.attr({x1:e[0].x,y1:e[0].y,x2:e[1].x,y2:e[1].y})}}):(n.changeArc.endAngle(this.valueToRadians(this.value,this.options.max,this.options.endAngle,this.options.startAngle,this.options.min)),n.changeElem.attr("d",n.changeArc),n.valueArc.endAngle(this.valueToRadians(this.value,this.options.max,this.options.endAngle,this.options.startAngle,this.options.min)),n.valueElem.attr("d",n.valueArc))},e.prototype.setValue=function(t){if(!this.inDrag&&this.value>=this.options.min&&this.value<=this.options.max){var i=this.valueToRadians(t,this.options.max,this.options.endAngle,this.options.startAngle,this.options.min);this.value=Math.round(~~((0>t?-.5:.5)+t/this.options.step)*this.options.step*100)/100,this.options.step<1&&(this.value=this.value.toFixed(1)),this.changeArc.endAngle(i),d3.select(this.element).select("#changeArc").attr("d",this.changeArc),this.valueArc.endAngle(i),d3.select(this.element).select("#valueArc").attr("d",this.valueArc);var s=this.calculateLineData(this.valueToRadians(this.value,this.options.max,this.options.endAngle,this.options.startAngle,this.options.min));if(this.valueLine.attr({x1:s[0].x,y1:s[0].y,x2:s[1].x,y2:s[1].y}),this.options.displayInput){var e=this.value;"function"==typeof this.options.mainFormatter&&(e=this.options.mainFormatter(e)),d3.select(this.element).select("#text").text(e+this.options.unit||"")}}},s.Gauge=e,s.gaugeDirective=function(){return{restrict:"E",scope:{value:"=",intervals:"=",options:"="},link:function(t,i){t.value=t.value||0;var e={values:[]};t.intervals=angular.merge(e,t.intervals);var n={lineColor:"grey",lineWidth:0,intervalWidth:20,intervalColors:[],skin:{type:"simple",width:10,color:"rgba(255,0,0,.5)",spaceWidth:5},animate:{enabled:!0,duration:1e3,ease:"bounce"},startAngle:-90,endAngle:90,unit:"",displayInput:!0,mainFormatter:function(t){return"main "+t},subTextFormatter:function(t){return"sub "+t},intervalFormatter:function(t){return"intr"+t},readOnly:!1,trackWidth:0,barWidth:0,trackColor:"rgba(0,0,0,0)",barColor:"rgba(255,0,0,.5)",prevBarColor:"rgba(0,0,0,0)",textColor:"#222",barCap:0,trackCap:0,fontSize:"auto",subText:{enabled:!1,text:"",color:"grey",font:"auto"},bgColor:"",bgFull:!1,scale:{enabled:!1,type:"lines",color:"gray",width:4,quantity:20,height:10,spaceWidth:15},step:1,displayPrevious:!1,min:0,max:100,dynamicOptions:!1};t.options=angular.merge(n,t.options);var o=new s.Gauge(i[0],t.value,t.intervals,t.options);t.$watch("value",function(t,i){null===t&&"undefined"==typeof t||"undefined"==typeof i||t===i||o.setValue(t)});var a=!0;if(t.$watch("intervals",function(){if(a)a=!1;else{var n=angular.merge(e,t.intervals);o=new s.Gauge(i[0],t.value,n,t.options),h()}},!0),t.options.dynamicOptions){var r=!0;t.$watch("options",function(){if(r)r=!1;else{var e=angular.merge(n,t.options);o=new s.Gauge(i[0],t.value,t.intervals,e),h()}},!0)}var h=function(){o.draw(function(i){t.$apply(function(){t.value=i})})};h()}}},angular.module("ui.gauge",[]).directive("uiGauge",s.gaugeDirective)}();
+'use strict';
+
+(function(){
+
+  var ui = {};
+  /**
+   *   Constructor
+   */
+
+  function sortValues(a,b){
+    return a - b;
+  }
+
+  function uniq(a) {
+    return a.sort(sortValues).filter(function(item, pos, ary) {
+        return !pos || item != ary[pos - 1];
+    })
+  }
+
+  var Gauge = function(element, value, intervals, options) {
+    this.element = element;
+    this.value = value;
+    this.intervals = intervals;
+    //Sort and remove duplicated values
+    this.intervals.values = uniq(this.intervals.values);
+    this.colors = [];
+    this.options = options;
+    this.size;
+    this.svg;
+    this.inDrag = false;
+  };
+  /**
+   *   Convert from value to radians
+   */
+  Gauge.prototype.valueToRadians = function(value, valueEnd, angleEnd, angleStart, valueStart) {
+    valueEnd = valueEnd || 100;
+    valueStart = valueStart || 0;
+    angleEnd = angleEnd || 360;
+    angleStart = angleStart || 0;
+    return (Math.PI/180) * ((((value - valueStart) * (angleEnd - angleStart)) / (valueEnd - valueStart)) + angleStart);
+  };
+  /**
+   *   Convert from radians to value
+   */
+  Gauge.prototype.radiansToValue = function(radians, valueEnd, valueStart, angleEnd, angleStart) {
+    valueEnd = valueEnd || 100;
+    valueStart = valueStart || 0;
+    angleEnd = angleEnd || 360;
+    angleStart = angleStart || 0;
+    return ((((((180/Math.PI) * radians) - angleStart) * (valueEnd - valueStart)) / (angleEnd - angleStart)) + valueStart);
+  };
+  /**
+   *   Create the arc
+   */
+  Gauge.prototype.createArc = function(innerRadius, outerRadius, startAngle, endAngle, cornerRadius) {
+    var arc = d3.svg.arc()
+    .innerRadius(innerRadius)
+    .outerRadius(outerRadius)
+    .startAngle(startAngle)
+    .endAngle(endAngle)
+    .cornerRadius(cornerRadius);
+    return arc;
+  };
+
+  /**
+   *   Draw the needle in the svg component
+   */
+  Gauge.prototype.drawNeedle = function(svg, label, angle){
+    var data = [
+      "M " + this.size/2 + "," + this.size/10 +
+      "L " + (this.size/2 - this.size/2 * 0.02) + "," + this.size/2 +
+      "L " + (this.size/2 + this.size/2 * 0.02) + "," + this.size/2 +
+      "L " + this.size/2 + "," + this.size/10 +
+      "Z"
+    ];
+    var elem = svg.append("path")
+    .attr('id', label)
+    .attr('d', data)
+    .attr("stroke", this.options.needleColor)
+    .attr("fill", this.options.needleColor)
+    .attr("transform", "rotate(" + angle + " " + this.size/2 + " "  + this.size/2 + ")");
+    return elem;
+  };
+
+  /**
+   *   Draw the needles's axis in the middle of the gauge
+   */
+  Gauge.prototype.drawAxis = function(svg, label){
+    var elem = svg.append('circle')
+    .attr("id", label)
+    .attr("cx", this.size/2)
+    .attr("cy", this.size/2)
+    .attr("r",  this.size*0.02)
+    .attr("fill", this.options.needleColor)
+    return elem;
+  };
+
+  /**
+   *   Draw the arc
+   */
+  Gauge.prototype.drawArc = function(svg, arc, label, style, click, drag) {
+    var elem = svg.append('path')
+    .attr('id', label)
+    .attr('d', arc)
+    .style(style)
+    .attr('transform', 'translate(' + (this.size / 2) + ', ' + (this.size / 2) + ')');
+
+    if(this.options.readOnly === false) {
+      if (click) {
+        elem.on('click', click);
+      }
+      if (drag) {
+        elem.call(drag);
+      }
+    }
+    return elem;
+  };
+
+
+  /**
+   *   Create the arcs
+   */
+  Gauge.prototype.createArcs = function() {
+    this.svg = d3.select(this.element)
+    .append('svg')
+    .attr({
+      "width": '100%',
+      "height": '100%'
+    });
+
+    this.size = Math.min(parseInt(this.svg.style("width"),10), parseInt(this.svg.style("height"),10));
+    this.svg.attr('viewBox', '0 0 '+this.size+' '+this.size);
+    //console.log(this.size);
+
+    var outerRadius = parseInt((this.size / 2), 10),
+    startAngle = this.valueToRadians(this.options.startAngle, 360),
+    endAngle = this.valueToRadians(this.options.endAngle, 360);
+    if(this.options.scale.enabled) {
+      outerRadius -= this.options.scale.height + this.options.scale.spaceWidth;
+    }
+    var trackInnerRadius = outerRadius - this.options.trackWidth,
+    changeInnerRadius = outerRadius - this.options.barWidth,
+    valueInnerRadius = outerRadius - this.options.barWidth,
+    interactInnerRadius = 1,
+
+    trackOuterRadius = outerRadius,
+    changeOuterRadius = outerRadius,
+    valueOuterRadius = outerRadius,
+    interactOuterRadius = outerRadius,
+    diff;
+
+    if(this.options.barWidth > this.options.trackWidth) {
+      diff = (this.options.barWidth - this.options.trackWidth) / 2;
+      trackInnerRadius -= diff;
+      trackOuterRadius -= diff;
+    } else if(this.options.barWidth < this.options.trackWidth) {
+      diff = (this.options.trackWidth - this.options.barWidth) / 2;
+      changeOuterRadius -= diff;
+      valueOuterRadius -= diff;
+      changeInnerRadius -= diff;
+      valueInnerRadius -= diff;
+    }
+
+    this.intervalArcs = [];
+    if(this.intervals.values.length != 0){
+
+      // Creating colors if no colors have been set
+      if(this.options.intervalColors.length == 0){
+        var v, hue, minHue=0, maxHue=120;
+        this.colors = [];
+        for(var i=0; i < this.intervals.values.length-1; i++){
+          v = (this.intervals.values[i] + this.intervals.values[i+1])/2;
+          hue = ((((v - this.options.min) * (maxHue - minHue)) / (this.options.max - this.options.min)) + minHue);
+          this.colors.push("hsl("+hue+",60%,50%)");
+        }
+      }
+      // Repeating colors if there are more values than colors
+      else if(this.options.intervalColors.length < this.intervals.values.length-1){
+        var colors = [];
+        for(var i=0; i < this.intervals.values.length - this.options.intervalColors.length-1; i++){
+          colors.push(this.options.intervalColors[i % this.options.intervalColors.length]);
+        }
+        this.colors = this.options.intervalColors.concat(colors);
+      }
+      // There are enough colors already
+      else{
+        this.colors = this.options.intervalColors.slice();
+      }
+
+      // Creating arcs
+      for(var i=0; i < this.intervals.values.length-1; i++){
+        this.intervalArcs.push(this.createArc(outerRadius - (this.options.intervalWidth), outerRadius,
+                                        this.valueToRadians(this.intervals.values[i], this.options.max, this.options.endAngle, this.options.startAngle, this.options.min),
+                                        this.valueToRadians(this.intervals.values[i+1], this.options.max, this.options.endAngle, this.options.startAngle, this.options.min)
+        ));
+      }
+    }
+
+    if(this.options.bgColor) {
+  		if(this.options.bgFull){
+  			this.bgArc = this.createArc(0, outerRadius, 0, Math.PI*2);
+  		}
+  		else{
+  			this.bgArc = this.createArc(0, outerRadius, startAngle, endAngle);
+  		}
+    }
+
+    if(this.options.skin.type === 'tron') {
+      trackOuterRadius = trackOuterRadius - this.options.skin.width - this.options.skin.spaceWidth;
+      changeOuterRadius = changeOuterRadius - this.options.skin.width - this.options.skin.spaceWidth;
+      valueOuterRadius = valueOuterRadius - this.options.skin.width - this.options.skin.spaceWidth;
+      interactOuterRadius = interactOuterRadius - this.options.skin.width - this.options.skin.spaceWidth;
+      this.hoopArc = this.createArc(outerRadius - this.options.skin.width, outerRadius, startAngle, endAngle);
+    }
+
+    this.trackArc = this.createArc(trackInnerRadius, trackOuterRadius, startAngle, endAngle, this.options.trackCap);
+    this.changeArc = this.createArc(changeInnerRadius, changeOuterRadius, startAngle, startAngle, this.options.barCap);
+    this.valueArc = this.createArc(valueInnerRadius, valueOuterRadius, startAngle, startAngle, this.options.barCap);
+    this.interactArc = this.createArc(interactInnerRadius, interactOuterRadius, startAngle, endAngle);
+  };
+
+  /**
+   *   Draw the arcs
+   */
+  Gauge.prototype.drawArcs = function(clickInteraction, dragBehavior) {
+    // Draws the background arc
+    if(this.options.bgColor) {
+      this.drawArc(this.svg, this.bgArc, 'bgArc', { "fill": this.options.bgColor });
+    }
+
+    // Draws the intervals arcs
+    if(this.intervalArcs.length != 0){
+      for(var i in this.intervalArcs){
+        if(this.intervalArcs.hasOwnProperty(i)){
+          this.drawArc(this.svg, this.intervalArcs[i], 'intervalArc' + i, { "fill": this.colors[i] });
+        }
+      }
+    }
+
+    if(this.options.displayInput) {
+      // Display intervals
+      for(var i = 0; i < this.intervals.values.length; i++){
+        if(this.options.displayInput){
+          if(this.intervals.values.hasOwnProperty(i)){
+            var v = this.intervals.values[i];
+            if (typeof this.options.intervalFormatter === "function"){
+                v = this.options.intervalFormatter(v);
+            }
+            if(i < this.intervalArcs.length){
+              // get the start angle of the arc
+              var f = this.intervalArcs[i].startAngle();
+            }
+            else{
+              // get the end angle of the arc
+              var f = this.intervalArcs[i-1].endAngle();
+            }
+            var angle = (f() + Math.PI / 2);
+            var fontSize = (this.size*0.05) + "px";
+            this.svg.append('text')
+            .attr('id', 'intervalText'+i)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', fontSize)
+            .attr('transform', 'translate(' + (this.size/2 - Math.cos(angle) * this.size/2.5) + ', ' + (this.size/2 - Math.sin(angle) * this.size/2.5) + ')')
+            .style("fill", this.options.textColor)
+            .text(v);
+          }
+        }
+      }
+
+      var fontSize = (this.size*0.20) + "px";
+      if(this.options.fontSize !== 'auto') {
+        fontSize = this.options.fontSize + "px";
+      }
+      if(this.options.step < 1) {
+        this.value = this.value.toFixed(1);
+      }
+      var v = this.value;
+      if (typeof this.options.mainFormatter === "function"){
+          v = this.options.mainFormatter(v);
+      }
+      this.svg.append('text')
+      .attr('id', 'text')
+      .attr("text-anchor", "middle")
+      .attr("font-size", fontSize)
+      .style("fill", this.options.textColor)
+      .text(v + this.options.unit || "")
+      .attr('transform', 'translate(' + ((this.size / 2)) + ', ' + ((this.size / 2) + (this.size*0.18)) + ')');
+
+      v = this.options.subText.text;
+      if (typeof this.options.subTextFormatter === "function"){
+          v = this.options.subTextFormatter(v);
+      }
+
+      if(this.options.subText.enabled) {
+        fontSize = (this.size*0.07) + "px";
+        if(this.options.subText.font !== 'auto') {
+          fontSize = this.options.subText.font + "px";
+        }
+        this.svg.append('text')
+        .attr('class', 'sub-text')
+        .attr("text-anchor", "middle")
+        .attr("font-size", fontSize)
+        .style("fill", this.options.subText.color)
+        .text(v)
+        .attr('transform', 'translate(' + ((this.size / 2)) + ', ' + ((this.size / 2) + (this.size*0.24)) + ')');
+      }
+
+    }
+    if(this.options.scale.enabled) {
+      var radius, quantity, count = 0, angle = 0, data,
+      startRadians = this.valueToRadians(this.options.min, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min),
+      endRadians = this.valueToRadians(this.options.max, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min),
+      diff = 0;
+      if(this.options.startAngle !== 0 || this.options.endAngle !== 360) {
+        diff = 1;
+      }
+      if(this.options.scale.type === 'dots') {
+        var width = this.options.scale.width;
+        radius = (this.size / 2) - width;
+        quantity = this.options.scale.quantity;
+        var offset = radius + this.options.scale.width;
+        data = d3.range(quantity).map(function () {
+          angle = (count * (endRadians - startRadians)) - (Math.PI / 2) + startRadians;
+          count = count + (1 / (quantity-diff));
+          return {
+            cx: offset + Math.cos(angle) * radius,
+            cy: offset + Math.sin(angle) * radius,
+            r: width
+          };
+        });
+        this.svg.selectAll("circle")
+        .data(data)
+        .enter().append("circle")
+        .attr({
+          r: function (d) {
+              return d.r;
+          },
+          cx: function (d) {
+              return d.cx;
+          },
+          cy: function (d) {
+              return d.cy;
+          },
+          fill: this.options.scale.color
+        });
+      } else if (this.options.scale.type === 'lines') {
+        var height = this.options.scale.height;
+        radius = (this.size / 2);
+        quantity = this.options.scale.quantity;
+        data = d3.range(quantity).map(function () {
+          angle = (count * (endRadians - startRadians)) - (Math.PI / 2) + startRadians;
+          count = count + (1 / (quantity-diff));
+          return {
+            x1: radius + Math.cos(angle) * radius,
+            y1: radius + Math.sin(angle) * radius,
+            x2: radius + Math.cos(angle) * (radius - height),
+            y2: radius + Math.sin(angle) * (radius - height)
+          };
+        });
+        this.svg.selectAll("line")
+        .data(data)
+        .enter().append("line")
+        .attr({
+          x1: function (d) {
+              return d.x1;
+          },
+          y1: function (d) {
+              return d.y1;
+          },
+          x2: function (d) {
+              return d.x2;
+          },
+          y2: function (d) {
+              return d.y2;
+          },
+          "stroke-width": this.options.scale.width,
+          "stroke": this.options.scale.color
+        });
+      }
+    }
+    if(this.options.skin.type === 'tron') {
+      this.drawArc(this.svg, this.hoopArc, 'hoopArc', { "fill": this.options.skin.color });
+    }
+    this.drawArc(this.svg, this.trackArc, 'trackArc', { "fill": this.options.trackColor });
+    if(this.options.displayPrevious) {
+      this.changeElem = this.drawArc(this.svg, this.changeArc, 'changeArc', { "fill": this.options.prevBarColor });
+    } else {
+      this.changeElem = this.drawArc(this.svg, this.changeArc, 'changeArc', { "fill-opacity": 0 });
+    }
+    this.valueElem = this.drawArc(this.svg, this.valueArc, 'valueArc', { "fill": this.options.barColor });
+
+    var cursor = "pointer";
+    if(this.options.readOnly) {
+      cursor = "default";
+    }
+
+    this.drawArc(this.svg, this.interactArc, 'interactArc', { "fill-opacity": 0, "cursor": cursor }, clickInteraction, dragBehavior);
+    // Draw the needle
+    var value = this.valueToRadians(this.value, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min) * 180/Math.PI;
+    this.valueNeedle = this.drawNeedle(this.svg, 'needle', value);
+    this.drawAxis(this.svg, 'axis');
+  };
+
+  /**
+   *   Draw gauge component
+   */
+  Gauge.prototype.draw = function(update) {
+    d3.select(this.element).select("svg").remove();
+    var that = this;
+
+    that.createArcs();
+
+    var dragBehavior = d3.behavior.drag()
+    .on('drag', dragInteraction)
+    .on('dragend', clickInteraction);
+
+    that.drawArcs(clickInteraction, dragBehavior);
+
+    if(that.options.animate.enabled) {
+      that.valueElem.transition().ease(that.options.animate.ease).duration(that.options.animate.duration).tween('',function() {
+        var i = d3.interpolate(that.valueToRadians(that.options.startAngle, 360), that.valueToRadians(that.value, that.options.max, that.options.endAngle, that.options.startAngle, that.options.min));
+        return function(t) {
+          var val = i(t);
+          that.valueElem.attr('d', that.valueArc.endAngle(val));
+          that.changeElem.attr('d', that.changeArc.endAngle(val));
+          // Update the needle's position
+          var angle = val * 180/Math.PI;
+          that.valueNeedle.attr("transform", "rotate(" + angle + " " + that.size/2 + " "  + that.size/2 + ")");
+        };
+      });
+    } else {
+      that.changeArc.endAngle(this.valueToRadians(this.value, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min));
+      that.changeElem.attr('d', that.changeArc);
+      that.valueArc.endAngle(this.valueToRadians(this.value, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min));
+      that.valueElem.attr('d', that.valueArc);
+    }
+
+    function dragInteraction() {
+      that.inDrag = true;
+      var x = d3.event.x - (that.size / 2);
+      var y = d3.event.y - (that.size / 2);
+      interaction(x,y, false);
+    }
+
+    function clickInteraction() {
+      that.inDrag = false;
+      var coords = d3.mouse(this.parentNode);
+      var x = coords[0] - (that.size / 2);
+      var y = coords[1] - (that.size / 2);
+      interaction(x,y, true);
+    }
+
+    function interaction(x,y, isFinal) {
+      var arc = Math.atan(y/x)/(Math.PI/180), radians, delta;
+
+      if ((x >= 0 && y <= 0) || (x >= 0 && y >= 0)) {
+        delta = 90;
+      } else {
+        delta = 270;
+        if(that.options.startAngle < 0) {
+          delta = -90;
+        }
+      }
+
+      radians = (delta + arc) * (Math.PI/180);
+      that.value = that.radiansToValue(radians, that.options.max, that.options.min, that.options.endAngle, that.options.startAngle);
+      if(that.value >= that.options.min && that.value <= that.options.max) {
+        that.value = Math.round(((~~ (((that.value < 0) ? -0.5 : 0.5) + (that.value/that.options.step))) * that.options.step) * 100) / 100;
+        if(that.options.step < 1) {
+          that.value = that.value.toFixed(1);
+        }
+        update(that.value);
+        that.valueArc.endAngle(that.valueToRadians(that.value, that.options.max, that.options.endAngle, that.options.startAngle, that.options.min));
+        that.valueElem.attr('d', that.valueArc);
+        // Update the needle's position
+        var angle = that.valueToRadians(that.value, that.options.max, that.options.endAngle, that.options.startAngle, that.options.min) * 180/Math.PI;
+        that.valueNeedle.attr("transform", "rotate(" + angle + " " + that.size/2 + " "  + that.size/2 + ")");
+
+        if (isFinal) {
+          that.changeArc.endAngle(that.valueToRadians(that.value, that.options.max, that.options.endAngle, that.options.startAngle, that.options.min));
+          that.changeElem.attr('d', that.changeArc);
+        }
+        if(that.options.displayInput) {
+          var v = that.value;
+          if (typeof that.options.mainFormatter === "function"){
+            v = that.options.mainFormatter(v);
+          }
+          d3.select(that.element).select('#text').text(v + that.options.unit || "");
+        }
+      }
+    }
+  };
+  /**
+   *   Set a value
+   */
+  Gauge.prototype.setValue = function(newValue) {
+    if ((!this.inDrag) && this.value >= this.options.min && this.value <= this.options.max) {
+      var radians = this.valueToRadians(newValue, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min);
+      this.value = Math.round(((~~ (((newValue < 0) ? -0.5 : 0.5) + (newValue/this.options.step))) * this.options.step) * 100) / 100;
+      if(this.options.step < 1) {
+        this.value = this.value.toFixed(1);
+      }
+      this.changeArc.endAngle(radians);
+      d3.select(this.element).select('#changeArc').attr('d', this.changeArc);
+      this.valueArc.endAngle(radians);
+      d3.select(this.element).select('#valueArc').attr('d', this.valueArc);
+      // Update the needle's position
+      var angle = this.valueToRadians(this.value, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min) * 180/Math.PI;
+      this.valueNeedle.attr("transform", "rotate(" + angle + " " + this.size/2 + " "  + this.size/2 + ")");
+
+      if(this.options.displayInput) {
+        var v = this.value;
+        if (typeof this.options.mainFormatter === "function"){
+          v = this.options.mainFormatter(v);
+        }
+        d3.select(this.element).select('#text').text(v + this.options.unit || "");
+      }
+    }
+  };
+
+  ui.Gauge = Gauge;
+  /**
+   *   Angular gauge directive
+   */
+  ui.gaugeDirective = function() {
+    return  {
+      restrict: 'E',
+      scope: {
+        value: '=',
+        intervals: '=',
+        options: '='
+      },
+      link: function (scope, element) {
+        scope.value = scope.value || 0;
+        var defaultIntervals = {
+          values : [],
+        };
+        scope.intervals = angular.merge(defaultIntervals, scope.intervals);
+        var defaultOptions = {
+          needleColor: 'grey',
+          needleWidth: 0,
+          intervalWidth: 20,
+          intervalColors: [],
+          skin: {
+            type: 'simple',
+            width: 10,
+            color: 'rgba(255,0,0,.5)',
+            spaceWidth: 5
+          },
+          animate: {
+            enabled: true,
+            duration: 1000,
+            ease: 'bounce'
+          },
+          startAngle: -90,
+          endAngle: 90,
+          unit: "",
+          displayInput: true,
+          mainFormatter: function(v){return "main " + v;},
+          subTextFormatter: function(v){return "sub " + v;},
+          intervalFormatter: function(v){return "intr" + v;},
+          readOnly: false,
+          trackWidth: 0,
+          barWidth: 0,
+          trackColor: "rgba(0,0,0,0)",
+          barColor: "rgba(255,0,0,.5)",
+          prevBarColor: "rgba(0,0,0,0)",
+          textColor: '#222',
+          barCap: 0,
+		      trackCap: 0,
+          fontSize: 'auto',
+          subText: {
+            enabled: false,
+            text: "",
+            color: "grey",
+            font: "auto"
+          },
+          bgColor: '',
+		      bgFull: false,
+          scale: {
+            enabled: false,
+            type: 'lines',
+            color: 'gray',
+            width: 4,
+            quantity: 20,
+            height: 10,
+            spaceWidth: 15
+          },
+          step: 1,
+          displayPrevious: false,
+          min: 0,
+          max: 100,
+          dynamicOptions: false
+				};
+        scope.options = angular.merge(defaultOptions, scope.options);
+
+        var gauge = new ui.Gauge(element[0], scope.value, scope.intervals, scope.options);
+
+        scope.$watch('value', function(newValue, oldValue) {
+          if((newValue !== null || typeof newValue !== 'undefined') && typeof oldValue !== 'undefined' && newValue !== oldValue) {
+            gauge.setValue(newValue);
+          }
+        });
+
+        var isFirstWatchOnIntervals = true;
+        scope.$watch('intervals', function() {
+          if (isFirstWatchOnIntervals) {
+            isFirstWatchOnIntervals = false;
+          } else {
+            var newIntervals = angular.merge(defaultIntervals, scope.intervals);
+            gauge = new ui.Gauge(element[0], scope.value, newIntervals, scope.options);
+            drawGauge();
+          }
+        }, true);
+
+        if(scope.options.dynamicOptions) {
+          var isFirstWatchOnOptions = true;
+          scope.$watch('options', function() {
+              if (isFirstWatchOnOptions) {
+                isFirstWatchOnOptions = false;
+              } else {
+                var newOptions = angular.merge(defaultOptions, scope.options);
+                gauge = new ui.Gauge(element[0], scope.value, scope.intervals, newOptions);
+                drawGauge();
+              }
+          }, true);
+        }
+
+        var drawGauge = function(){
+          gauge.draw(function(value) {
+            scope.$apply(function() {
+              scope.value = value;
+            });
+          });
+        };
+
+        drawGauge();
+
+      }
+    };
+  };
+
+  angular.module('ui.gauge', []).directive('uiGauge', ui.gaugeDirective);
+})();

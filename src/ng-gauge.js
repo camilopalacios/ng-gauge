@@ -63,28 +63,35 @@
   };
 
   /**
-   *   Draw the line in the svg component
+   *   Draw the needle in the svg component
    */
-  Gauge.prototype.drawLine = function(svg, data, label){
-    var elem = svg.append("line")
+  Gauge.prototype.drawNeedle = function(svg, label, angle){
+    var data = [
+      "M " + this.size/2 + "," + this.size/10 +
+      "L " + (this.size/2 - this.size/2 * 0.02) + "," + this.size/2 +
+      "L " + (this.size/2 + this.size/2 * 0.02) + "," + this.size/2 +
+      "L " + this.size/2 + "," + this.size/10 +
+      "Z"
+    ];
+    var elem = svg.append("path")
     .attr('id', label)
-    .attr({"x1": data[0].x,"y1": data[0].y, "x2": data[1].x, "y2": data[1].y})
-    .attr("stroke-width", this.options.lineWidth)
-    .attr("stroke", this.options.lineColor)
-    .attr("stroke-linecap", "round");
+    .attr('d', data)
+    .attr("stroke", this.options.needleColor)
+    .attr("fill", this.options.needleColor)
+    .attr("transform", "rotate(" + angle + " " + this.size/2 + " "  + this.size/2 + ")");
     return elem;
   };
 
   /**
-   *   Draw the line's axis in the middle of the gauge
+   *   Draw the needles's axis in the middle of the gauge
    */
   Gauge.prototype.drawAxis = function(svg, label){
     var elem = svg.append('circle')
     .attr("id", label)
     .attr("cx", this.size/2)
     .attr("cy", this.size/2)
-    .attr("r",  this.size*0.015)
-    .attr("fill", this.options.lineColor)
+    .attr("r",  this.size*0.02)
+    .attr("fill", this.options.needleColor)
     return elem;
   };
 
@@ -134,7 +141,6 @@
     var trackInnerRadius = outerRadius - this.options.trackWidth,
     changeInnerRadius = outerRadius - this.options.barWidth,
     valueInnerRadius = outerRadius - this.options.barWidth,
-    //interactInnerRadius = outerRadius - this.options.barWidth,
     interactInnerRadius = 1,
 
     trackOuterRadius = outerRadius,
@@ -153,7 +159,6 @@
       valueOuterRadius -= diff;
       changeInnerRadius -= diff;
       valueInnerRadius -= diff;
-      //interactInnerRadius = outerRadius - this.options.trackWidth;
     }
 
     this.intervalArcs = [];
@@ -218,15 +223,6 @@
    *   Draw the arcs
    */
   Gauge.prototype.drawArcs = function(clickInteraction, dragBehavior) {
-    /*var svg = d3.select(this.element)
-    .append('svg')
-    .attr({
-      "width": '100%',
-      "height": '100%'
-    });
-    //.attr('viewBox', '0 0 '+this.size+' '+this.size);
-    this.size = parseInt(svg.style("width"),10);
-    */
     // Draws the background arc
     if(this.options.bgColor) {
       this.drawArc(this.svg, this.bgArc, 'bgArc', { "fill": this.options.bgColor });
@@ -399,22 +395,10 @@
     }
 
     this.drawArc(this.svg, this.interactArc, 'interactArc', { "fill-opacity": 0, "cursor": cursor }, clickInteraction, dragBehavior);
-    // Draw the line
-    var data = this.calculateLineData(this.valueToRadians(this.value, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min));
-    this.valueLine = this.drawLine(this.svg, data, 'line');
+    // Draw the needle
+    var value = this.valueToRadians(this.value, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min) * 180/Math.PI;
+    this.valueNeedle = this.drawNeedle(this.svg, 'needle', value);
     this.drawAxis(this.svg, 'axis');
-  };
-
-  /*
-   * Calculates the points to draw the line
-   */
-  Gauge.prototype.calculateLineData = function(value){
-    var radius, radians, angle;
-    angle = value - Math.PI / 2;
-    radius = this.size/2;
-    var data = [{"x": this.size/2, "y": this.size/2},
-                {"x": radius + Math.cos(angle) * (radius - this.options.intervalWidth/2), "y": radius + Math.sin(angle) * (radius - this.options.intervalWidth/2)}];
-    return data;
   };
 
   /**
@@ -439,9 +423,9 @@
           var val = i(t);
           that.valueElem.attr('d', that.valueArc.endAngle(val));
           that.changeElem.attr('d', that.changeArc.endAngle(val));
-          // Update the line's position
-          var data = that.calculateLineData(val);
-          that.valueLine.attr({"x1": data[0].x,"y1": data[0].y, "x2": data[1].x, "y2": data[1].y});
+          // Update the needle's position
+          var angle = val * 180/Math.PI;
+          that.valueNeedle.attr("transform", "rotate(" + angle + " " + that.size/2 + " "  + that.size/2 + ")");
         };
       });
     } else {
@@ -488,9 +472,9 @@
         update(that.value);
         that.valueArc.endAngle(that.valueToRadians(that.value, that.options.max, that.options.endAngle, that.options.startAngle, that.options.min));
         that.valueElem.attr('d', that.valueArc);
-        // Update the line's position
-        var data = that.calculateLineData(that.valueToRadians(that.value, that.options.max, that.options.endAngle, that.options.startAngle, that.options.min));
-        that.valueLine.attr({"x1": data[0].x,"y1": data[0].y, "x2": data[1].x, "y2": data[1].y});
+        // Update the needle's position
+        var angle = that.valueToRadians(that.value, that.options.max, that.options.endAngle, that.options.startAngle, that.options.min) * 180/Math.PI;
+        that.valueNeedle.attr("transform", "rotate(" + angle + " " + that.size/2 + " "  + that.size/2 + ")");
 
         if (isFinal) {
           that.changeArc.endAngle(that.valueToRadians(that.value, that.options.max, that.options.endAngle, that.options.startAngle, that.options.min));
@@ -520,9 +504,9 @@
       d3.select(this.element).select('#changeArc').attr('d', this.changeArc);
       this.valueArc.endAngle(radians);
       d3.select(this.element).select('#valueArc').attr('d', this.valueArc);
-      // Update the line's position
-      var data = this.calculateLineData(this.valueToRadians(this.value, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min));
-      this.valueLine.attr({"x1": data[0].x,"y1": data[0].y, "x2": data[1].x, "y2": data[1].y});
+      // Update the needle's position
+      var angle = this.valueToRadians(this.value, this.options.max, this.options.endAngle, this.options.startAngle, this.options.min) * 180/Math.PI;
+      this.valueNeedle.attr("transform", "rotate(" + angle + " " + this.size/2 + " "  + this.size/2 + ")");
 
       if(this.options.displayInput) {
         var v = this.value;
@@ -553,8 +537,8 @@
         };
         scope.intervals = angular.merge(defaultIntervals, scope.intervals);
         var defaultOptions = {
-          lineColor: 'grey',
-          lineWidth: 0,
+          needleColor: 'grey',
+          needleWidth: 0,
           intervalWidth: 20,
           intervalColors: [],
           skin: {
