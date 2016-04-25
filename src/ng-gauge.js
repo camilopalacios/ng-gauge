@@ -326,7 +326,8 @@
         });
         this.svg.selectAll("circle")
         .data(data)
-        .enter().append("circle")
+        .enter()
+        .append("circle")
         .attr({
           r: function (d) {
               return d.r;
@@ -340,6 +341,11 @@
           fill: this.options.scale.color
         });
       } else if (this.options.scale.type === 'lines') {
+
+
+
+
+
         var height = this.outerRadius;
         radius = (this.size / 2);
         quantity = this.options.max+1;
@@ -353,9 +359,10 @@
             y2: radius + Math.sin(angle) * (radius - height*0.12)
           };
         });
-        this.svg.selectAll("line")
+        this.svg.selectAll("line.values")
         .data(data)
-        .enter().append("line")
+        .enter()
+        .append("line")
         .attr({
           x1: function (d) {
               return d.x1;
@@ -372,6 +379,47 @@
           "stroke-width": this.options.scale.width,
           "stroke": this.options.scale.color
         });
+
+
+
+
+
+        var outerrad = this.outerRadius;
+        radius = (this.size / 2);
+        data = [];
+        for(var i=0; i<this.intervals.values.length; i++){
+          angle = this.valueToRadians(this.intervals.values[i], this.options.max, this.options.endAngle, this.options.startAngle, this.options.min) - Math.PI / 2;
+          data.push({
+            x1: radius + Math.cos(angle) * (radius - outerrad*0.07),
+            y1: radius + Math.sin(angle) * (radius - outerrad*0.07),
+            x2: radius + Math.cos(angle) * (radius - outerrad*0.16),
+            y2: radius + Math.sin(angle) * (radius - outerrad*0.16)
+            });
+        }
+        this.svg.selectAll("line.intervals")
+        .data(data)
+        .enter()
+        .append("line")
+        .attr({
+          x1: function (d) {
+              return d.x1;
+          },
+          y1: function (d) {
+              return d.y1;
+          },
+          x2: function (d) {
+              return d.x2;
+          },
+          y2: function (d) {
+              return d.y2;
+          },
+          "stroke-width": this.options.scale.width*2,
+          "stroke": this.options.scale.color
+        });
+
+
+
+
       }
     }
     if(this.options.skin.type === 'tron') {
