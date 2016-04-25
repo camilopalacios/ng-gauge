@@ -29,8 +29,8 @@
     "type": "git",
     "url": "git://github.com/camilopalacios/ng-gauge.git"
   },
-  "devDependencies": {
-    "d3": "^3.5.16",
-    "angular": "^1.5.5"
+  "dependencies": {
+    "angular": "^1.5.5",
+    "d3": "^3.5.16"
   }
 }
