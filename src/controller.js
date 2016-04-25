@@ -16,8 +16,8 @@ function GaugeController() {
 			//intervalColors: ['red','yellow','green', 'blue', 'purple', 'grey'],
 			min: 0,
 			max: 100,
-			startAngle:-90,
-			endAngle:90,
+			startAngle:-120,
+			endAngle:120,
 			animate: {
 				enabled: true,
 				duration: 1000,
@@ -39,7 +39,6 @@ function GaugeController() {
 				spaceWidth: 5
 			},
 			textColor: '#212121',
-			bgColor: "#f5f5f0",
 			step : 1,
 			scale: {
 				enabled: true,
