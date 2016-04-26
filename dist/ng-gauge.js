@@ -202,14 +202,6 @@
   		}
     }
 
-    if(this.options.skin.type === 'tron') {
-      trackOuterRadius = trackOuterRadius - this.options.skin.width - this.options.skin.spaceWidth;
-      changeOuterRadius = changeOuterRadius - this.options.skin.width - this.options.skin.spaceWidth;
-      valueOuterRadius = valueOuterRadius - this.options.skin.width - this.options.skin.spaceWidth;
-      interactOuterRadius = interactOuterRadius - this.options.skin.width - this.options.skin.spaceWidth;
-      this.hoopArc = this.createArc(this.outerRadius - this.options.skin.width, this.outerRadius, startAngle, endAngle);
-    }
-
     this.trackArc = this.createArc(trackInnerRadius, trackOuterRadius, startAngle, endAngle, this.options.trackCap);
     this.changeArc = this.createArc(changeInnerRadius, changeOuterRadius, startAngle, startAngle, this.options.barCap);
     this.valueArc = this.createArc(valueInnerRadius, valueOuterRadius, startAngle, startAngle, this.options.barCap);
@@ -310,106 +302,71 @@
       if(this.options.startAngle !== 0 || this.options.endAngle !== 360) {
         diff = 1;
       }
-      if(this.options.scale.type === 'dots') {
-        var width = this.options.scale.width;
-        radius = (this.size / 2) - width;
-        quantity = this.options.scale.quantity;
-        var offset = radius + this.options.scale.width;
-        data = d3.range(quantity).map(function () {
-          angle = (count * (endRadians - startRadians)) - (Math.PI / 2) + startRadians;
-          count = count + (1 / (quantity-diff));
-          return {
-            cx: offset + Math.cos(angle) * radius,
-            cy: offset + Math.sin(angle) * radius,
-            r: width
-          };
-        });
-        this.svg.selectAll("circle")
-        .data(data)
-        .enter()
-        .append("circle")
-        .attr({
-          r: function (d) {
-              return d.r;
-          },
-          cx: function (d) {
-              return d.cx;
-          },
-          cy: function (d) {
-              return d.cy;
-          },
-          fill: this.options.scale.color
-        });
-      } else if (this.options.scale.type === 'lines') {
-        var height = this.outerRadius;
-        radius = (this.size / 2);
-        quantity = this.options.max+1;
-        data = d3.range(quantity).map(function () {
-          angle = (count * (endRadians - startRadians)) - (Math.PI / 2) + startRadians;
-          count = count + (1 / (quantity-diff));
-          return {
-            x1: radius + Math.cos(angle) * (radius - height*0.07),
-            y1: radius + Math.sin(angle) * (radius - height*0.07),
-            x2: radius + Math.cos(angle) * (radius - height*0.12),
-            y2: radius + Math.sin(angle) * (radius - height*0.12)
-          };
-        });
-        this.svg.selectAll("line.values")
-        .data(data)
-        .enter()
-        .append("line")
-        .attr({
-          x1: function (d) {
-              return d.x1;
-          },
-          y1: function (d) {
-              return d.y1;
-          },
-          x2: function (d) {
-              return d.x2;
-          },
-          y2: function (d) {
-              return d.y2;
-          },
-          "stroke-width": this.options.scale.width,
-          "stroke": this.options.scale.color
-        });
-        var outerrad = this.outerRadius;
-        radius = (this.size / 2);
-        data = [];
-        for(var i=0; i<this.intervals.values.length; i++){
-          angle = this.valueToRadians(this.intervals.values[i], this.options.max, this.options.endAngle, this.options.startAngle, this.options.min) - Math.PI / 2;
-          data.push({
-            x1: radius + Math.cos(angle) * (radius - outerrad*0.07),
-            y1: radius + Math.sin(angle) * (radius - outerrad*0.07),
-            x2: radius + Math.cos(angle) * (radius - outerrad*0.16),
-            y2: radius + Math.sin(angle) * (radius - outerrad*0.16)
-            });
-        }
-        this.svg.selectAll("line.intervals")
-        .data(data)
-        .enter()
-        .append("line")
-        .attr({
-          x1: function (d) {
-              return d.x1;
-          },
-          y1: function (d) {
-              return d.y1;
-          },
-          x2: function (d) {
-              return d.x2;
-          },
-          y2: function (d) {
-              return d.y2;
-          },
-          "stroke-width": this.options.scale.width*2,
-          "stroke": this.options.scale.color
-        });
+      var height = this.outerRadius;
+      radius = (this.size / 2);
+      quantity = this.options.max+1;
+      data = d3.range(quantity).map(function () {
+        angle = (count * (endRadians - startRadians)) - (Math.PI / 2) + startRadians;
+        count = count + (1 / (quantity-diff));
+        return {
+          x1: radius + Math.cos(angle) * (radius - height*0.07),
+          y1: radius + Math.sin(angle) * (radius - height*0.07),
+          x2: radius + Math.cos(angle) * (radius - height*0.12),
+          y2: radius + Math.sin(angle) * (radius - height*0.12)
+        };
+      });
+      this.svg.selectAll("line.values")
+      .data(data)
+      .enter()
+      .append("line")
+      .attr({
+        x1: function (d) {
+            return d.x1;
+        },
+        y1: function (d) {
+            return d.y1;
+        },
+        x2: function (d) {
+            return d.x2;
+        },
+        y2: function (d) {
+            return d.y2;
+        },
+        "stroke-width": this.options.scale.width,
+        "stroke": this.options.scale.color
+      });
+      var outerrad = this.outerRadius;
+      radius = (this.size / 2);
+      data = [];
+      for(var i=0; i<this.intervals.values.length; i++){
+        angle = this.valueToRadians(this.intervals.values[i], this.options.max, this.options.endAngle, this.options.startAngle, this.options.min) - Math.PI / 2;
+        data.push({
+          x1: radius + Math.cos(angle) * (radius - outerrad*0.07),
+          y1: radius + Math.sin(angle) * (radius - outerrad*0.07),
+          x2: radius + Math.cos(angle) * (radius - outerrad*0.16),
+          y2: radius + Math.sin(angle) * (radius - outerrad*0.16)
+          });
       }
-    }
-    if(this.options.skin.type === 'tron') {
-      this.drawArc(this.svg, this.hoopArc, 'hoopArc', { "fill": this.options.skin.color });
+      this.svg.selectAll("line.intervals")
+      .data(data)
+      .enter()
+      .append("line")
+      .attr({
+        x1: function (d) {
+            return d.x1;
+        },
+        y1: function (d) {
+            return d.y1;
+        },
+        x2: function (d) {
+            return d.x2;
+        },
+        y2: function (d) {
+            return d.y2;
+        },
+        "stroke-width": this.options.scale.width*2,
+        "stroke": this.options.scale.color
+      });
     }
     this.drawArc(this.svg, this.trackArc, 'trackArc', { "fill": this.options.trackColor });
     if(this.options.displayPrevious) {
@@ -568,7 +525,6 @@
         scope.intervals = angular.merge(defaultIntervals, scope.intervals);
         var defaultOptions = {
           needleColor: 'grey',
-          //intervalWidth: 20,
           intervalColors: [],
           skin: {
             type: 'simple',

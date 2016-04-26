@@ -42,7 +42,6 @@ function GaugeController() {
 			step : 1,
 			scale: {
 				enabled: true,
-				type: 'lines',
 				color: 'gray',
 				width: 1,
 				quantity: 12,
