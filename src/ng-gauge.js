@@ -3,9 +3,6 @@
 (function(){
 
   var ui = {};
-  /**
-   *   Constructor
-   */
 
   function sortValues(a,b){
     return a - b;
@@ -16,6 +13,10 @@
         return !pos || item != ary[pos - 1];
     })
   }
+
+  /**
+   *   Constructor
+   */
 
   var Gauge = function(element, value, intervals, options) {
     this.element = element;

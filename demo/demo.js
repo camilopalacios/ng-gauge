@@ -19,8 +19,8 @@ function GaugeController() {
 			//intervalColors: ['red','yellow','green', 'blue', 'purple', 'grey'],
 			min: 0,
 			max: 100,
-			startAngle:-120,
-			endAngle:120,
+			startAngle:-90,
+			endAngle:90,
 			animate: {
 				enabled: true,
 				duration: 1000,
@@ -71,8 +71,6 @@ function GaugeController() {
 			controller.intervals.values.push(Math.floor(Math.random()*10) * 10);
 		}
 		controller.intervals.values.push(controller.options.max);
-
-		console.log();
 	};
 }
 }());

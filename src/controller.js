@@ -68,7 +68,5 @@ function GaugeController() {
 			controller.intervals.values.push(Math.floor(Math.random()*10) * 10);
 		}
 		controller.intervals.values.push(controller.options.max);
-
-		console.log();
 	};
 }
