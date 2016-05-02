@@ -3,9 +3,6 @@
 (function(){
 
   var ui = {};
-  /**
-   *   Constructor
-   */
 
   function sortValues(a,b){
     return a - b;
@@ -16,6 +13,10 @@
         return !pos || item != ary[pos - 1];
     })
   }
+
+  /**
+   *   Constructor
+   */
 
   var Gauge = function(element, value, intervals, options) {
     this.element = element;
@@ -250,7 +251,7 @@
             .attr('text-anchor', 'middle')
             .attr('font-size', fontSize)
             .attr('transform', 'translate(' + (this.size/2 - Math.cos(angle) * this.size/2.65) + ', ' + (this.size/2 - Math.sin(angle) * this.size/2.65) + ')')
-            .style("fill", this.options.textColor)
+            .style('fill', this.options.textColor)
             .text(v);
           }
         }
@@ -525,34 +526,28 @@
         scope.intervals = angular.merge(defaultIntervals, scope.intervals);
         var defaultOptions = {
           needleColor: 'grey',
+    			min: 0,
+    			max: 100,
+    			startAngle:-120,
+    			endAngle:120,
           intervalColors: [],
-          skin: {
-            type: 'simple',
-            width: 10,
-            color: 'rgba(255,0,0,.5)',
-            spaceWidth: 5
-          },
           animate: {
             enabled: true,
             duration: 1000,
             ease: 'bounce'
           },
-          startAngle: -90,
-          endAngle: 90,
           unit: "",
           displayInput: true,
           mainFormatter: function(v){return "main " + v;},
           subTextFormatter: function(v){return "sub " + v;},
           intervalFormatter: function(v){return "intr" + v;},
-          readOnly: false,
+          readOnly: true,
           trackWidth: 0,
           barWidth: 0,
           trackColor: "rgba(0,0,0,0)",
           barColor: "rgba(255,0,0,.5)",
           prevBarColor: "rgba(0,0,0,0)",
-          textColor: '#222',
-          barCap: 0,
-		      trackCap: 0,
+          textColor: '#212121',
           fontSize: 'auto',
           subText: {
             enabled: false,
@@ -560,21 +555,14 @@
             color: "grey",
             font: "auto"
           },
-          bgColor: '',
-		      bgFull: false,
           scale: {
-            enabled: false,
+    				enabled: true,
             type: 'none',
-            color: 'gray',
-            width: 4,
-            quantity: 20,
-            height: 10,
-            spaceWidth: 15
-          },
+    				color: 'gray',
+    				width: 1,
+    			},
           step: 1,
           displayPrevious: false,
-          min: 0,
-          max: 100,
           dynamicOptions: false
 				};
         scope.options = angular.merge(defaultOptions, scope.options);

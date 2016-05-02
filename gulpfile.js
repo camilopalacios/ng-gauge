@@ -13,10 +13,9 @@ gulp.task('scripts', function() {
 	.pipe(minify({
       ext:{
           src:'.js',
-          min:'-min.js'
+          min:'.min.js'
       },
   }))
-  //.pipe(rename('ng-gauge-min.js'))
 	.pipe(gulp.dest('./dist'));
 });
 

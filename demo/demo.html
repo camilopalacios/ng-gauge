@@ -3,16 +3,17 @@
 	<head>
 		<script src="../../d3/d3.min.js"> </script>
 		<script src="../../angular/angular.min.js"> </script>
-		<script type="text/javascript" src="../dist/ng-gauge-min.js"> </script>
+		<script type="text/javascript" src="../dist/ng-gauge.min.js"> </script>
 		<script type="text/javascript" src="../demo/demo.js"> </script>
 		<link rel="stylesheet" href="style.css" />
 		<meta charset="UTF-8"></meta>
+		<title>NG_Gauge demo</title>
 	</head>
 	<body ng-controller="GaugeController as gaugeCtrl">
 		<div id="gaugeDiv1">
 			<ui-gauge value="gaugeCtrl.value" intervals="gaugeCtrl.intervals" options="gaugeCtrl.options"></ui-gauge>
 		</div>
 
-		<button id="clickMe" ng-click="gaugeCtrl.mockFunction()">Click me</button>
+		<button id="clickMe" ng-click="gaugeCtrl.randomIntervals()">Randomize intervals</button>
 	</body>
 </html>

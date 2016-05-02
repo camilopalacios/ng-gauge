@@ -5,15 +5,12 @@ angular
 function GaugeController() {
 
 	var controller ={
-		mockFunction: mockFunction,
-		getParentSize: getParentSize,
-		value: 65,
+		value: 50,
 		intervals : {
-			values: [0,10,20,30,40,10,10,10,10,10,10,50,60,70,80,90,100],
+			values: [0,10,20,30,40,10,10,10,10,10,10,50,60,70,80,90,100], // The interval is sorted and repeated values are removed
 		},
 		options : {
 			needleColor: 'grey',
-			//intervalColors: ['red','yellow','green', 'blue', 'purple', 'grey'],
 			min: 0,
 			max: 100,
 			startAngle:-120,
@@ -27,41 +24,20 @@ function GaugeController() {
 			mainFormatter: function(v){return v;},
 			subTextFormatter: function(v){return v;},
 			intervalFormatter: function(v){return v;},
+			readOnly: false,
 			subText: {
 				enabled: true,
 				color: '#222',
-				text: 'HDD space'
-			},
-			skin: {
-				type: 'simple',
-				width: 10,
-				color: 'rgba(255,0,0,.5)',
-				spaceWidth: 5
+				text: 'km/h'
 			},
 			textColor: '#212121',
-			step : 1,
-			scale: {
-				enabled: true,
-				color: 'gray',
-				width: 1,
-				quantity: 12,
-				height: 10,
-				spaceWidth: 15
-			},
 		},
+		randomIntervals: randomIntervals,
 	};
 
 	return controller;
 
-	function getParentSize(){
-		var element = document.getElementById('gaugeDiv'),
-		style = window.getComputedStyle(element);
-		var width = parseInt(style.getPropertyValue('width'), 10),
-		height = parseInt(style.getPropertyValue('height'),10);
-		return Math.min(width, height);
-	};
-
-	function mockFunction(){
+	function randomIntervals(){
 		controller.intervals.values = [];
 		controller.intervals.values.push(controller.options.min);
 		for(var i=1; i < 9; i++){
