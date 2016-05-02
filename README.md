@@ -73,3 +73,15 @@ function GaugeController() {
 }
 ```
 
+Options
+-------
+
+###### You can pass these options to the initialize function to set a custom look and feel for the plugin.
+
+
+
+License
+-------
+
+Licensed under the ISC license
+
