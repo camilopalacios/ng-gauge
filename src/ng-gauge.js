@@ -557,7 +557,6 @@
           },
           scale: {
     				enabled: true,
-            type: 'none',
     				color: 'gray',
     				width: 1,
     			},
