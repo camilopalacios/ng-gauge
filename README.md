@@ -88,9 +88,10 @@ Options
 | inputFormatter     | function      | function(value){ return value; }                                                                   | Formats the input value **before appending the `unit`** and displaying it to the DOM         |
 | readOnly         | boolean      | true                                                                                                  | Disabled change value (`true` or `false`)                                                    |
 | textColor        | string       | '#222'                                                                                                | Text color                                                                                   |
-| fontSize         | string       | 'auto'                                                                                                | Subtext options                                                                              |
-| scale            | object       | { enabled: true, color: 'gray', width: 1}                 
-| Scale options                                                                                |
+| fontSize         | string       | 'auto'                                                                                                | Font size in px. `auto`: automatic change                                                    |
+| subText          | object       | { enabled: false, text: '', color: 'gray', font: 'auto' }                                             | Subtext options                                                                              |
+| scale            | object       | { enabled: true, color: 'gray', width: 1}  
+| Scale options, type: `lines` or `dots`                                                       |
 | step             | integer      | 1                                                                                                     | Step change, min `0.1`                                                                       |
 | min              | integer      | 0                                                                                                     | Min value (start value), only integer                                                        |
 | max              | integer      | 100                                                                                                   | Max value (end value), only integer                                                          |
