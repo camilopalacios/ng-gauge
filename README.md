@@ -90,8 +90,8 @@ Options
 | textColor        | string       | '#222'                                                                                                | Text color                                                                                   |
 | fontSize         | string       | 'auto'                                                                                                | Font size in px. `auto`: automatic change                                                    |
 | subText          | object       | { enabled: false, text: '', color: 'gray', font: 'auto' }                                             | Subtext options                                                                              |
-| scale            | object       | { enabled: true, color: 'gray', width: 1}  
-| Scale options, type: `lines` or `dots`                                                       |
+| scale            | object       | { enabled: true, color: 'gray', width: 1}
+| Scale options                                                                                |
 | step             | integer      | 1                                                                                                     | Step change, min `0.1`                                                                       |
 | min              | integer      | 0                                                                                                     | Min value (start value), only integer                                                        |
 | max              | integer      | 100                                                                                                   | Max value (end value), only integer                                                          |
